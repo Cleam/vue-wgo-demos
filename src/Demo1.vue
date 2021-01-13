@@ -18,8 +18,14 @@
 import WGo from './utils/wgo';
 import bgImg from './assets/wood_1024.jpg';
 export default {
+  data() {
+    return {
+      cur: WGo.B,
+    };
+  },
   mounted() {
     console.log(WGo.DIR);
+    const game = new WGo.Game();
     const board = new WGo.Board(this.$refs.board, {
       // size: 19,
       width: 600,
@@ -66,35 +72,61 @@ export default {
       },
     };
     const tool = this.$refs.tool; // get the <select> element
-    board.addEventListener('click', function (x, y) {
-      if (tool.value == 'black') {
-        board.addObject({
-          x: x,
-          y: y,
-          c: WGo.B,
-        });
-      } else if (tool.value == 'white') {
-        board.addObject({
-          x: x,
-          y: y,
-          c: WGo.W,
-        });
-      } else if (tool.value == 'remove') {
-        board.removeObjectsAt(x, y);
-      } else if (tool.value == 'plane') {
-        board.addObject({
-          x: x,
-          y: y,
-          type: plane,
-        });
-      } else {
-        board.addObject({
-          x: x,
-          y: y,
-          type: tool.value,
-        });
-      }
+    // 添加鼠标点击事件
+    board.addEventListener('click', (x, y) => {
+      // if (tool.value == 'black') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     c: WGo.B,
+      //   });
+      // } else if (tool.value == 'white') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     c: WGo.W,
+      //   });
+      // } else if (tool.value == 'remove') {
+      //   board.removeObjectsAt(x, y);
+      // } else if (tool.value == 'plane') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     type: plane,
+      //   });
+      // } else {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     type: tool.value,
+      //   });
+      // }
+      board.addObject({
+        x: x,
+        y: y,
+        c: this.cur,
+      });
+      console.log(game.play(x, y, this.cur));
+      this.cur = this.cur === WGo.B ? WGo.W : WGo.B;
+
+      // 获取当前棋盘状态
+      // console.log('[getState]', board.getState());
+      // board.restoreState(state);
     });
+    // 鼠标移入&移出事件
+    // let timer = null;
+    // board.addEventListener('mousemove', (x, y) => {
+    //   if (timer) {
+    //     clearTimeout(timer);
+    //   }
+    //   timer = setTimeout(() => {
+    //     console.log('[mousemove]', x, y);
+    //   }, 30);
+    // });
+    // board.addEventListener('mouseout', (x, y) => {
+    //   console.log('[mouseout]', x, y);
+    // });
+    // board.removeEventListener(name, callback)
 
     var coordinates = {
       // draw on grid layer
@@ -129,7 +161,32 @@ export default {
         },
       },
     };
+    // 添加自定义canvas对象到棋盘
     board.addCustomObject(coordinates);
+    // 删除自定义对象
+    // board.removeCustomObject(handler, args)
+    // // 获取棋盘section配置
+    // console.log(board.getSection()); // {top: -0.5, left: -0.5, right: -0.5, bottom: -0.5}
+    // // 根据棋盘坐标位置获取canvas坐标位置
+    // console.log(board.getX(11)); // 11: 代表第12列，size为19时，取值范围就是0~18
+    // console.log(board.getY(0)); // 0: 代表第1行
+    // // 添加对象到棋盘指定位置
+    // board.addObject([
+    //   { x: 0, y: 0, c: WGo.B },
+    //   { x: 1, y: 1, type: 'LB', text: 'B' },
+    // ]);
+    // // 删除棋盘指定位置上的对象
+    // board.removeObjectsAt(0, 0);
+
+    // const pos = new WGo.Position();
+    // pos.set(0, 2, { name: 'xxxx' });
+    // console.log(pos.get(0, 2));
+
+    // const game = new WGo.Game();
+    // console.log(game.size); // 19
+    // console.log(game.repeating); // KO
+    // console.log(game.turn); // 1
+    // console.log(game.getPosition()); // 1
   },
   setup() {},
 };
