@@ -74,55 +74,65 @@ export default {
     const tool = this.$refs.tool; // get the <select> element
     // 添加鼠标点击事件
     board.addEventListener('click', (x, y) => {
-      // if (tool.value == 'black') {
-      //   board.addObject({
-      //     x: x,
-      //     y: y,
-      //     c: WGo.B,
-      //   });
-      // } else if (tool.value == 'white') {
-      //   board.addObject({
-      //     x: x,
-      //     y: y,
-      //     c: WGo.W,
-      //   });
-      // } else if (tool.value == 'remove') {
-      //   board.removeObjectsAt(x, y);
-      // } else if (tool.value == 'plane') {
-      //   board.addObject({
-      //     x: x,
-      //     y: y,
-      //     type: plane,
-      //   });
-      // } else {
-      //   board.addObject({
-      //     x: x,
-      //     y: y,
-      //     type: tool.value,
-      //   });
-      // }
-      board.addObject({
-        x: x,
-        y: y,
-        c: this.cur,
-      });
-      console.log(game.play(x, y, this.cur));
-      this.cur = this.cur === WGo.B ? WGo.W : WGo.B;
+      console.log(x, y);
+      if (tool.value == 'black') {
+        board.addObject({
+          x: x,
+          y: y,
+          c: WGo.B,
+        });
+      } else if (tool.value == 'white') {
+        board.addObject({
+          x: x,
+          y: y,
+          c: WGo.W,
+        });
+      } else if (tool.value == 'remove') {
+        board.removeObjectsAt(x, y);
+      } else if (tool.value == 'plane') {
+        board.addObject({
+          x: x,
+          y: y,
+          type: plane,
+        });
+      } else {
+        board.addObject({
+          x: x,
+          y: y,
+          type: tool.value,
+        });
+      }
+      // board.addObject({
+      //   x: x,
+      //   y: y,
+      //   c: this.cur,
+      // });
+      // console.log(game.play(x, y, this.cur));
+      // this.cur = this.cur === WGo.B ? WGo.W : WGo.B;
 
       // 获取当前棋盘状态
-      // console.log('[getState]', board.getState());
+      console.log('[getState]', board.getState());
       // board.restoreState(state);
     });
     // 鼠标移入&移出事件
-    // let timer = null;
-    // board.addEventListener('mousemove', (x, y) => {
-    //   if (timer) {
-    //     clearTimeout(timer);
-    //   }
-    //   timer = setTimeout(() => {
-    //     console.log('[mousemove]', x, y);
-    //   }, 30);
-    // });
+    let timer = null;
+    let pos;
+    board.addEventListener('mousemove', (x, y) => {
+      // if (timer) {
+      //   clearTimeout(timer);
+      // }
+      // timer = setTimeout(() => {}, 30);
+      // console.log('[mousemove]', x, y);
+      // if (pos && pos.x >= 0 && pos.y >= 0) {
+      //   const { objects } = board.getState();
+      //   const stone = objects[x][y];
+      //   if (stone.length === 0 || stone[0].type === 'oueline') {
+      //     board.removeObjectsAt(pos.x, pos.y);
+      //   }
+      // }
+      // pos = { x, y };
+      // board.addObject({ x, y, type: 'outline' });
+    });
     // board.addEventListener('mouseout', (x, y) => {
     //   console.log('[mouseout]', x, y);
     // });
@@ -171,22 +181,31 @@ export default {
     // console.log(board.getX(11)); // 11: 代表第12列，size为19时，取值范围就是0~18
     // console.log(board.getY(0)); // 0: 代表第1行
     // // 添加对象到棋盘指定位置
-    // board.addObject([
-    //   { x: 0, y: 0, c: WGo.B },
-    //   { x: 1, y: 1, type: 'LB', text: 'B' },
-    // ]);
+    board.addObject([
+      { x: 0, y: 0, c: WGo.B },
+      { x: 1, y: 1, type: 'MA' },
+      { x: 5, y: 1, type: 'LB', text: 'Hello' },
+      { x: 5, y: 2, c: WGo.W },
+      { x: 5, y: 2, type: 'LB', text: 'World' },
+      { x: 2, y: 2, type: 'SL' },
+      { x: 3, y: 2, type: 'MONO' },
+      { x: 4, y: 3, type: 'GlOW' },
+      { x: 2, y: 4, type: 'PAINTED' },
+      { x: 2, y: 3, type: 'outline' },
+      { x: 2, y: 1, type: 'mini' },
+    ]);
     // // 删除棋盘指定位置上的对象
     // board.removeObjectsAt(0, 0);
 
-    // const pos = new WGo.Position();
-    // pos.set(0, 2, { name: 'xxxx' });
-    // console.log(pos.get(0, 2));
+    // const pos2 = new WGo.Position();
+    // pos2.set(0, 2, { name: 'xxxx' });
+    // console.log(pos2.get(0, 2));
 
     // const game = new WGo.Game();
-    // console.log(game.size); // 19
-    // console.log(game.repeating); // KO
-    // console.log(game.turn); // 1
-    // console.log(game.getPosition()); // 1
+    console.log(game.size); // 19
+    console.log(game.repeating); // KO
+    console.log(game.turn); // 1
+    console.log(game.getPosition()); // 1
   },
   setup() {},
 };
