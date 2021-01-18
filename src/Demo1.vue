@@ -9,6 +9,7 @@
     <option value="plane">飞机</option>
     <option value="remove">删除</option>
   </select>
+  <button @click="addStone">addStone</button>
   <div ref="board">
     <!-- board will go here -->
   </div>
@@ -25,8 +26,8 @@ export default {
   },
   mounted() {
     console.log(WGo.DIR);
-    const game = new WGo.Game();
-    const board = new WGo.Board(this.$refs.board, {
+    const game = (this.game = new WGo.Game());
+    const board = (this.board = new WGo.Board(this.$refs.board, {
       // size: 19,
       width: 600,
       background: bgImg,
@@ -38,7 +39,7 @@ export default {
         right: -0.5,
         bottom: -0.5,
       },
-    });
+    }));
     const plane = {
       // draw on stone layer
       stone: {
@@ -75,63 +76,84 @@ export default {
     // 添加鼠标点击事件
     board.addEventListener('click', (x, y) => {
       console.log(x, y);
-      if (tool.value == 'black') {
-        board.addObject({
-          x: x,
-          y: y,
-          c: WGo.B,
-        });
-      } else if (tool.value == 'white') {
-        board.addObject({
-          x: x,
-          y: y,
-          c: WGo.W,
-        });
-      } else if (tool.value == 'remove') {
-        board.removeObjectsAt(x, y);
-      } else if (tool.value == 'plane') {
-        board.addObject({
-          x: x,
-          y: y,
-          type: plane,
-        });
-      } else {
-        board.addObject({
-          x: x,
-          y: y,
-          type: tool.value,
-        });
-      }
-      // board.addObject({
-      //   x: x,
-      //   y: y,
-      //   c: this.cur,
-      // });
+      // if (tool.value == 'black') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     c: WGo.B,
+      //   });
+      // } else if (tool.value == 'white') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     c: WGo.W,
+      //   });
+      // } else if (tool.value == 'remove') {
+      //   board.removeObjectsAt(x, y);
+      // } else if (tool.value == 'plane') {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     type: plane,
+      //   });
+      // } else {
+      //   board.addObject({
+      //     x: x,
+      //     y: y,
+      //     type: tool.value,
+      //   });
+      // }
+      // 数据
+      // 视图
+      board.addObject({
+        x: x,
+        y: y,
+        c: game.turn,
+      });
+      console.log('[game.turn]', game.turn);
+      game.play(x, y);
       // console.log(game.play(x, y, this.cur));
       // this.cur = this.cur === WGo.B ? WGo.W : WGo.B;
 
       // 获取当前棋盘状态
-      console.log('[getState]', board.getState());
+      // console.log('[getState]', board.getState());
       // board.restoreState(state);
+      console.log('[getPosition]', game.getPosition());
     });
     // 鼠标移入&移出事件
     let timer = null;
-    let pos;
+    let _lastX;
+    let _lastY;
+    let _last_mark;
     board.addEventListener('mousemove', (x, y) => {
       // if (timer) {
       //   clearTimeout(timer);
       // }
       // timer = setTimeout(() => {}, 30);
       // console.log('[mousemove]', x, y);
+      // game.play(x, y);
       // if (pos && pos.x >= 0 && pos.y >= 0) {
-      //   const { objects } = board.getState();
-      //   const stone = objects[x][y];
-      //   if (stone.length === 0 || stone[0].type === 'oueline') {
-      //     board.removeObjectsAt(pos.x, pos.y);
-      //   }
+      //   board.removeObjectsAt(pos.x, pos.y);
       // }
       // pos = { x, y };
       // board.addObject({ x, y, type: 'outline' });
+
+      _lastX = x;
+      _lastY = y;
+      if (_last_mark) {
+        board.removeObject(_last_mark);
+      }
+      if (x != -1 && y != -1 && game.isValid(x, y)) {
+        _last_mark = {
+          type: 'outline',
+          x: x,
+          y: y,
+          c: game.turn, // 1： 黑子，-1： 白子
+        };
+        board.addObject(_last_mark);
+      } else {
+        _last_mark = null;
+      }
     });
     // board.addEventListener('mouseout', (x, y) => {
     //   console.log('[mouseout]', x, y);
@@ -181,19 +203,19 @@ export default {
     // console.log(board.getX(11)); // 11: 代表第12列，size为19时，取值范围就是0~18
     // console.log(board.getY(0)); // 0: 代表第1行
     // // 添加对象到棋盘指定位置
-    board.addObject([
-      { x: 0, y: 0, c: WGo.B },
-      { x: 1, y: 1, type: 'MA' },
-      { x: 5, y: 1, type: 'LB', text: 'Hello' },
-      { x: 5, y: 2, c: WGo.W },
-      { x: 5, y: 2, type: 'LB', text: 'World' },
-      { x: 2, y: 2, type: 'SL' },
-      { x: 3, y: 2, type: 'MONO' },
-      { x: 4, y: 3, type: 'GlOW' },
-      { x: 2, y: 4, type: 'PAINTED' },
-      { x: 2, y: 3, type: 'outline' },
-      { x: 2, y: 1, type: 'mini' },
-    ]);
+    // board.addObject([
+    //   { x: 0, y: 0, c: WGo.B },
+    //   { x: 1, y: 1, type: 'MA' },
+    //   { x: 5, y: 1, type: 'LB', text: 'Hello' },
+    //   { x: 5, y: 2, c: WGo.W },
+    //   { x: 5, y: 2, type: 'LB', text: 'World' },
+    //   { x: 2, y: 2, type: 'SL' },
+    //   { x: 3, y: 2, type: 'MONO' },
+    //   { x: 4, y: 3, type: 'GlOW' },
+    //   { x: 2, y: 4, type: 'PAINTED' },
+    //   { x: 2, y: 3, type: 'outline' },
+    //   { x: 2, y: 1, type: 'mini' },
+    // ]);
     // // 删除棋盘指定位置上的对象
     // board.removeObjectsAt(0, 0);
 
@@ -205,7 +227,19 @@ export default {
     console.log(game.size); // 19
     console.log(game.repeating); // KO
     console.log(game.turn); // 1
-    console.log(game.getPosition()); // 1
+    console.log('[getPosition]', game.getPosition());
+    // game.getStone(3, 12);
+  },
+  methods: {
+    addStone() {
+      // addStone和setStone唯一区别就是
+      // addStone先判断位置上有没有内容，没有就添加，有就不添加。
+      // setStone不做判断，直接添加。
+      this.game.addStone(0, 0, 1);
+      this.game.setStone(1, 1, -1);
+      console.log(this.game.getPosition());
+      console.log(this.game.position);
+    },
   },
   setup() {},
 };
